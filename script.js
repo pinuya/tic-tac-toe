@@ -17,8 +17,20 @@ let playing = false;
 
 // events
 document.querySelector(".reset").addEventListener("click", reset);
+document.querySelectorAll(".item").forEach((item) => {
+  item.addEventListener("click", itemClick);
+});
 
 // functions
+function itemClick(event) {
+  let item = event.target.getAttribute("data-item");
+  if (square[item] === "") {
+    square[item] = player;
+    renderSquare();
+    togglePlayer();
+  }
+}
+
 function reset() {
   warning = "";
 
