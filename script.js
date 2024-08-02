@@ -1,5 +1,5 @@
 // initial data
-let square = {
+let quadro = {
   a1: "",
   a2: "",
   a3: "",
@@ -11,75 +11,84 @@ let square = {
   c3: "",
 };
 
-let playerTurn = "";
-let warning = "";
 let playing = false;
+let vez = "x";
+let warning = "";
+
+reset();
 
 // events
 document.querySelector(".reset").addEventListener("click", reset);
+
 document.querySelectorAll(".item").forEach((item) => {
-  item.addEventListener("click", itemClick);
+  item.addEventListener("click", (e) => {
+    let loc = e.target.getAttribute("data-item");
+
+    if (playing && quadro[loc] === "") {
+      quadro[loc] = vez;
+      renderQuadro();
+      togglePlayer();
+    }
+  });
 });
 
 // functions
-function itemClick(event) {
-  let item = event.target.getAttribute("data-item");
-  if (square[item] === "") {
-    square[item] = player;
-    renderSquare();
-    togglePlayer();
-  }
-}
-
-checkGame();
-
 function reset() {
   warning = "";
 
+  // definir a vez
   let random = Math.floor(Math.random() * 2);
-  player = random === 0 ? "x" : "o";
+  vez = random === 0 ? "x" : "o";
 
-  for (let i in square) {
-    square[i] = "";
+  // resetar os quadros
+  for (let i in quadro) {
+    quadro[i] = "";
   }
+
+  // renderizar tudo
+  renderQuadro();
+  renderInfo();
 
   playing = true;
-
-  renderSquare();
-  renderInfo();
 }
 
-function renderSquare() {
-  for (let i in square) {
+function renderQuadro() {
+  for (let i in quadro) {
     let item = document.querySelector(`div[data-item=${i}]`);
-    item.innerHTML = square[i];
+    if (quadro[i] !== "") {
+      item.innerHTML = quadro[i];
+    } else {
+      item.innerHTML = "";
+    }
   }
+
+  checkGame();
 }
 
 function renderInfo() {
-  document.querySelector(".vez").innerHTML = player;
+  document.querySelector(".vez").innerHTML = vez;
   document.querySelector(".resultado").innerHTML = warning;
 }
 
 function togglePlayer() {
-  player = player === "x" ? "o" : "x";
+  vez = vez === "x" ? "o" : "x";
   renderInfo();
 }
 
 function checkGame() {
   if (checkWinnerFor("x")) {
-    warning = 'O "X" venceu!';
+    warning = 'O "x" venceu!';
     playing = false;
   } else if (checkWinnerFor("o")) {
-    warning = 'O "O" venceu!';
+    warning = 'O "o" venceu!';
     playing = false;
   } else if (isFull()) {
-    warning = "Deu empate!";
+    warning = "Deu empate.";
     playing = false;
   }
 }
 
-function checkWinnerFor(player) {
+function checkWinnerFor(i) {
   let pos = [
     "a1,a2,a3",
     "b1,b2,b3",
@@ -92,17 +101,18 @@ function checkWinnerFor(player) {
   ];
 
   for (let w in pos) {
-    let pArray = pos[w].split(","); // a1, a2, a3
-    let hasWon = pArray.every((option) => {
-      square[option] === player;
-
-      if (hasWon) {
-        return true;
-      }
-    });
+    let pArray = pos[w].split(",");
+    let hasWon = pArray.every((option) => quadro[option] === i);
+    if (hasWon) return true;
   }
 
   return false;
 }
-
-function isFull() {}
+function isFull() {
+  for (let i in quadro) {
+    if (quadro[i] === "") {
+      return false;
+    }
+  }
+  return true;
+}
