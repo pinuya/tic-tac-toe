@@ -58,3 +58,8 @@ function renderInfo() {
   document.querySelector(".vez").innerHTML = player;
   document.querySelector(".resultado").innerHTML = warning;
 }
+
+function togglePlayer() {
+  player = player === "x" ? "o" : "x";
+  renderInfo();
+}
